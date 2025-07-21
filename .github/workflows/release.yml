@@ -52,24 +52,5 @@ jobs:
           npm run test-lazy
 
       - name: Release
-        uses: google-github-actions/release-please-action@v4
+        uses: googleapis/release-please-action@v4
         id: release
-        with:
-          release-type: node
-          package-name: "@monumental-works/apriltag-node"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          changelog-types: |
-            [
-              {"type":"feat","section":"Features","hidden":false},
-              {"type":"fix","section":"Bug Fixes","hidden":false},
-              {"type":"perf","section":"Performance Improvements","hidden":false},
-              {"type":"deps","section":"Dependencies","hidden":false},
-              {"type":"revert","section":"Reverts","hidden":false},
-              {"type":"docs","section":"Documentation","hidden":true},
-              {"type":"style","section":"Styles","hidden":true},
-              {"type":"chore","section":"Miscellaneous","hidden":true},
-              {"type":"refactor","section":"Refactoring","hidden":true},
-              {"type":"test","section":"Tests","hidden":true},
-              {"type":"build","section":"Build System","hidden":true},
-              {"type":"ci","section":"CI/CD","hidden":true}
-            ]
