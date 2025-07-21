@@ -68,3 +68,25 @@ new AprilTag(family?, options?)
 - `tagCircle49h12` - Large lookup table with 49-bit codes
 - `tagCustom48h12` - Large lookup table with 48-bit codes
 - `tagStandard52h13` - Largest family with 52-bit codes
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### AprilTag Library
+
+This package includes the [AprilTag library](https://github.com/AprilRobotics/apriltag) developed by the APRIL Robotics Laboratory at the University of Michigan. The AprilTag library is licensed under the BSD 2-Clause License.
+
+**AprilTag Citation:**
+```
+@INPROCEEDINGS{wang2016iros,
+  author = {John Wang and Edwin Olson},
+  title = {{AprilTag 2: Efficient and robust fiducial detection}},
+  booktitle = {Proceedings of the {IEEE} International Conference on Robotics and
+               Automation ({ICRA})},
+  year = {2016},
+  month = {May},
+}
+```
+
+For more information about AprilTag, visit: https://april.eecs.umich.edu/software/apriltag
