@@ -1,0 +1,48 @@
+{
+  "name": "apriltag-node",
+  "version": "1.0.0",
+  "description": "Node.js bindings for AprilTag detection library",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    }
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "build": "node-gyp rebuild",
+    "clean": "node-gyp clean",
+    "test": "node test/test.js",
+    "example": "node examples/detect-from-image.js",
+    "example-comprehensive": "node examples/detect-comprehensive.js",
+    "example-focused": "node examples/detect-focused.js",
+    "performance": "node examples/performance-test.js",
+    "timing": "node examples/constructor-timing.js",
+    "test-families": "node examples/test-all-families.js",
+    "test-lazy": "node examples/test-lazy-init.js"
+  },
+  "keywords": [
+    "apriltag",
+    "computer-vision",
+    "fiducial",
+    "marker",
+    "detection",
+    "opencv",
+    "robotics"
+  ],
+  "author": "Monumental Works BV",
+  "license": "MIT",
+  "dependencies": {
+    "node-addon-api": "^7.0.0",
+    "sharp": "^0.33.0"
+  },
+  "devDependencies": {
+    "node-gyp": "^10.0.0"
+  },
+  "gypfile": true
+}
