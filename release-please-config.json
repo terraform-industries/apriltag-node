@@ -4,6 +4,7 @@
     ".": {
       "package-name": "@monumental-works/apriltag-node",
       "release-type": "node",
+      "draft": false,
       "changelog-sections": [
         {"type": "feat", "section": "Features", "hidden": false},
         {"type": "fix", "section": "Bug Fixes", "hidden": false},
