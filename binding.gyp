@@ -23,6 +23,7 @@
         "deps/apriltag/common/time_util.c",
         "deps/apriltag/common/unionfind.c",
         "deps/apriltag/common/workerpool.c",
+        "deps/apriltag/common/pthreads_cross.c",
         "deps/apriltag/common/zarray.c",
         "deps/apriltag/common/zhash.c",
         "deps/apriltag/common/zmaxheap.c",
@@ -67,6 +68,19 @@
       "defines": [
         "NAPI_DISABLE_CPP_EXCEPTIONS",
         "NDEBUG"
+      ],
+      "conditions": [
+        ["OS=='win'", {
+          "defines": [
+            "_WIN32_WINNT=0x0600"
+          ]
+        }],
+        ["OS!='win'", {
+          "libraries": [
+            "-lpthread",
+            "-lm"
+          ]
+        }]
       ]
     }
   ]
