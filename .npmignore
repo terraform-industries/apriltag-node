@@ -1,0 +1,44 @@
+# Build artifacts
+build/
+node_modules/
+*.log
+*.tmp
+*.temp
+
+# Development files
+.github/
+test/
+examples/
+*.md
+!README.md
+!LICENSE.md
+.gitignore
+.gitmodules
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test images and temporary files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Dependency directories
+deps/apriltag/build/
+deps/apriltag/example/
+deps/apriltag/test/
+deps/apriltag/.git/

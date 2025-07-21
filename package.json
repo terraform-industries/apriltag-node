@@ -37,6 +37,14 @@
   ],
   "author": "Monumental Works BV",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terraform-industries/apriltag-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/terraform-industries/apriltag-node/issues"
+  },
+  "homepage": "https://github.com/terraform-industries/apriltag-node#readme",
   "dependencies": {
     "node-addon-api": "^7.0.0",
     "sharp": "^0.33.0"
@@ -44,5 +52,16 @@
   "devDependencies": {
     "node-gyp": "^10.0.0"
   },
-  "gypfile": true
+  "gypfile": true,
+  "files": [
+    "lib/",
+    "src/",
+    "deps/",
+    "binding.gyp",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
