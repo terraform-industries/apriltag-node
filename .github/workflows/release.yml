@@ -34,6 +34,18 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Cache node-gyp
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/node-gyp
+            ~/.node-gyp
+            build/
+          key: ${{ runner.os }}-node-gyp-20-${{ hashFiles('binding.gyp', 'deps/**') }}
+          restore-keys: |
+            ${{ runner.os }}-node-gyp-20-
+            ${{ runner.os }}-node-gyp-
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
