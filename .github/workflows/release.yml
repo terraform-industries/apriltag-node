@@ -14,6 +14,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
+  repository-projects: write
 
 jobs:
   release:
@@ -50,11 +52,12 @@ jobs:
           npm run test-lazy
 
       - name: Release
-        uses: google-github-actions/release-please-action@v3
+        uses: google-github-actions/release-please-action@v4
         id: release
         with:
           release-type: node
-          package-name: apriltag-node
+          package-name: "@monumental-works/apriltag-node"
+          token: ${{ secrets.GITHUB_TOKEN }}
           changelog-types: |
             [
               {"type":"feat","section":"Features","hidden":false},
