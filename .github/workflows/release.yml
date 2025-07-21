@@ -9,6 +9,7 @@ on:
       - 'README.md'
       - 'docs/**'
       - '.github/workflows/ci.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
