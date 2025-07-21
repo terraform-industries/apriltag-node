@@ -14,7 +14,7 @@ export interface AprilTagOptions {
   numThreads?: number;
 }
 
-export type AprilTagFamily = 
+export type AprilTagFamily =
   | 'tag36h11'
   | 'tag25h9'
   | 'tag16h5'
@@ -26,9 +26,13 @@ export type AprilTagFamily =
 
 export declare class AprilTag {
   constructor(family?: AprilTagFamily, options?: AprilTagOptions);
-  
-  detect(width: number, height: number, imageData: Buffer | Uint8Array): AprilTagDetection[];
-  
+
+  detect(
+    width: number,
+    height: number,
+    imageData: Buffer | Uint8Array
+  ): AprilTagDetection[];
+
   setQuadDecimate(value: number): this;
   setQuadSigma(value: number): this;
   setRefineEdges(value: boolean): this;
@@ -41,10 +45,10 @@ export declare const FAMILIES: {
   readonly TAG25H9: 'tag25h9';
   readonly TAG16H5: 'tag16h5';
   readonly TAGCIRCLE21H7: 'tagCircle21h7';
-  readonly TAGCIRCLE49H12: 'tagCircle49h12';  // ⚠️  Large family - slow initialization
-  readonly TAGCUSTOM48H12: 'tagCustom48h12';  // ⚠️  Large family - slow initialization
+  readonly TAGCIRCLE49H12: 'tagCircle49h12'; // ⚠️  Large family - slow initialization
+  readonly TAGCUSTOM48H12: 'tagCustom48h12'; // ⚠️  Large family - slow initialization
   readonly TAGSTANDARD41H12: 'tagStandard41h12';
-  readonly TAGSTANDARD52H13: 'tagStandard52h13';  // ⚠️  Large family - slow initialization
+  readonly TAGSTANDARD52H13: 'tagStandard52h13'; // ⚠️  Large family - slow initialization
 };
 
 export default AprilTag;

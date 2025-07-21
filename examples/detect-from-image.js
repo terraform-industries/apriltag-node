@@ -1,7 +1,7 @@
-import AprilTag, { FAMILIES } from "../lib/index.js";
-import sharp from "sharp";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import AprilTag, { FAMILIES } from '../lib/index.js';
+import sharp from 'sharp';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,13 +26,13 @@ async function detectAprilTags(imagePath) {
       decodeSharpening: 0.25,
     });
 
-    console.log("Running AprilTag detection...");
+    console.log('Running AprilTag detection...');
 
     // Detect AprilTags
     const detections = detector.detect(info.width, info.height, data);
 
     console.log(`\nFound ${detections.length} AprilTag(s):`);
-    console.log("=".repeat(50));
+    console.log('='.repeat(50));
 
     detections.forEach((detection, index) => {
       console.log(`\nTag #${index + 1}:`);
@@ -53,18 +53,18 @@ async function detectAprilTags(imagePath) {
     });
 
     if (detections.length === 0) {
-      console.log("\nNo AprilTags detected. You might want to try:");
-      console.log("- Different tag family (tag25h9, tag16h5, etc.)");
-      console.log("- Adjusting detection parameters");
-      console.log("- Ensuring the image contains valid AprilTags");
+      console.log('\nNo AprilTags detected. You might want to try:');
+      console.log('- Different tag family (tag25h9, tag16h5, etc.)');
+      console.log('- Adjusting detection parameters');
+      console.log('- Ensuring the image contains valid AprilTags');
     }
   } catch (error) {
-    console.error("Error processing image:", error.message);
+    console.error('Error processing image:', error.message);
     process.exit(1);
   }
 }
 
 // Get image path from command line or use default
-const imagePath = process.argv[2] || join(__dirname, "..", "DSC02867.JPG");
+const imagePath = process.argv[2] || join(__dirname, '..', 'DSC02867.JPG');
 
 detectAprilTags(imagePath);

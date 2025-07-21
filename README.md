@@ -22,13 +22,13 @@ const detector = new AprilTag(FAMILIES.TAG36H11, {
   quadDecimate: 2.0,
   quadSigma: 0.0,
   refineEdges: true,
-  decodeSharpening: 0.25
+  decodeSharpening: 0.25,
 });
 
 // Detect tags in grayscale image
 const detections = detector.detect(width, height, imageBuffer);
 
-detections.forEach(detection => {
+detections.forEach((detection) => {
   console.log(`Tag ID: ${detection.id}`);
   console.log(`Center: [${detection.center[0]}, ${detection.center[1]}]`);
   console.log(`Corners:`, detection.corners);
@@ -61,18 +61,21 @@ new AprilTag(family?, options?)
 ### Supported Tag Families
 
 **Fast initialization:**
+
 - `tag36h11` (default) - Recommended for general use
-- `tag25h9` - Good balance of performance and robustness  
+- `tag25h9` - Good balance of performance and robustness
 - `tag16h5` - Fastest initialization, fewer unique tags
 - `tagCircle21h7` - Circular design
 - `tagStandard41h12` - Standard format
 
 **Large families (slower initialization):**
+
 - `tagCircle49h12` ⚠️ - Large lookup table, first detection ~10-30s
-- `tagCustom48h12` ⚠️ - Large lookup table, first detection ~10-30s  
+- `tagCustom48h12` ⚠️ - Large lookup table, first detection ~10-30s
 - `tagStandard52h13` ⚠️ - Largest family, first detection ~30-60s
 
 **Performance Notes:**
+
 - Constructor is fast with lazy initialization
 - First detection initializes the tag family (one-time cost)
 - Subsequent detections use cached initialization
