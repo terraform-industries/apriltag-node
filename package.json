@@ -1,5 +1,5 @@
 {
-  "name": "apriltag-node",
+  "name": "@monumental-works/apriltag-node",
   "version": "1.0.0",
   "description": "Node.js bindings for AprilTag detection library",
   "type": "module",
