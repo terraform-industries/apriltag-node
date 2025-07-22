@@ -2,17 +2,12 @@
 
 Node.js bindings for the AprilTag fiducial marker detection library.
 
-## Installation
-
-```bash
-npm install
-npm run build
-```
-
 ## Usage
 
+Install the [@monumental-works/apriltag-node](www.npmjs.com/package/@monumental-works/apriltag-node) NPM package.
+
 ```javascript
-import AprilTag, { FAMILIES } from 'apriltag-node';
+import AprilTag, { FAMILIES } from '@monumental-works/apriltag-node';
 
 // Create detector with default tag36h11 family
 const detector = new AprilTag();
@@ -43,7 +38,7 @@ detections.forEach((detection) => {
 new AprilTag(family?, options?)
 ```
 
-- `family`: Tag family (default: 'tag36h11')
+- `family`: Tag family (default: `FAMILIES.TAG36H11`)
 - `options`: Detection options
   - `quadDecimate`: Quad decimation factor
   - `quadSigma`: Gaussian blur sigma
