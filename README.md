@@ -4,7 +4,7 @@ Node.js bindings for the AprilTag fiducial marker detection library.
 
 ## Usage
 
-Install the [@monumental-works/apriltag-node](www.npmjs.com/package/@monumental-works/apriltag-node) NPM package.
+Install the [@monumental-works/apriltag-node](https://www.npmjs.com/package/@monumental-works/apriltag-node) NPM package.
 
 ```javascript
 import AprilTag, { FAMILIES } from '@monumental-works/apriltag-node';
