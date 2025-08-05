@@ -27,6 +27,15 @@ export type AprilTagFamily =
 export declare class AprilTag {
   constructor(family?: AprilTagFamily, options?: AprilTagOptions);
 
+  /**
+   * Ensures the detector is fully initialized.
+   * This triggers lazy initialization of the tag family if not already done.
+   * Useful for pre-warming the detector before timing-critical operations.
+   * Multiple calls return the same promise instance.
+   * @returns Promise that resolves when initialization is complete
+   */
+  ensureInitialized(): Promise<boolean>;
+
   detect(
     width: number,
     height: number,

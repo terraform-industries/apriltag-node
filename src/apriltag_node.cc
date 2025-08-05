@@ -45,6 +45,8 @@ public:
     Napi::Value SetRefineEdges(const Napi::CallbackInfo& info);
     Napi::Value SetDecodeSharpening(const Napi::CallbackInfo& info);
     Napi::Value SetNumThreads(const Napi::CallbackInfo& info);
+    Napi::Value Initialize(const Napi::CallbackInfo& info);
+    Napi::Value InitializeAsync(const Napi::CallbackInfo& info);
     
     void InitializeFamily();
     bool IsFamilyInitialized() const { 
@@ -66,6 +68,8 @@ Napi::Object AprilTagDetector::Init(Napi::Env env, Napi::Object exports) {
     Napi::Function func = DefineClass(env, "AprilTagDetector", {
         InstanceMethod("detect", &AprilTagDetector::Detect),
         InstanceMethod("detectAsync", &AprilTagDetector::DetectAsync),
+        InstanceMethod("initialize", &AprilTagDetector::Initialize),
+        InstanceMethod("initializeAsync", &AprilTagDetector::InitializeAsync),
         InstanceMethod("setQuadDecimate", &AprilTagDetector::SetQuadDecimate),
         InstanceMethod("setQuadSigma", &AprilTagDetector::SetQuadSigma),
         InstanceMethod("setRefineEdges", &AprilTagDetector::SetRefineEdges),
@@ -292,6 +296,36 @@ Napi::Value AprilTagDetector::SetNumThreads(const Napi::CallbackInfo& info) {
     return env.Undefined();
 }
 
+Napi::Value AprilTagDetector::Initialize(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (!family_initialized) {
+        InitializeFamily();
+    }
+    
+    return Napi::Boolean::New(env, true);
+}
+
+class InitializeAsyncWorker : public Napi::AsyncWorker {
+private:
+    AprilTagDetector* detector_instance;
+
+public:
+    InitializeAsyncWorker(Napi::Function& callback, AprilTagDetector* detector_inst)
+        : Napi::AsyncWorker(callback), detector_instance(detector_inst) {}
+
+    void Execute() override {
+        // Initialize family if not already done (in background thread)
+        if (!detector_instance->IsFamilyInitialized()) {
+            detector_instance->InitializeFamily();
+        }
+    }
+
+    void OnOK() override {
+        Callback().Call({Env().Null(), Napi::Boolean::New(Env(), true)});
+    }
+};
+
 class DetectAsyncWorker : public Napi::AsyncWorker {
 private:
     AprilTagDetector* detector_instance;
@@ -394,6 +428,22 @@ Napi::Value AprilTagDetector::DetectAsync(const Napi::CallbackInfo& info) {
     }
 
     DetectAsyncWorker* worker = new DetectAsyncWorker(callback, this, width, height, buffer.Data(), buffer.Length());
+    worker->Queue();
+    
+    return env.Undefined();
+}
+
+Napi::Value AprilTagDetector::InitializeAsync(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (info.Length() < 1 || !info[0].IsFunction()) {
+        Napi::TypeError::New(env, "Expected callback function").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    Napi::Function callback = info[0].As<Napi::Function>();
+    
+    InitializeAsyncWorker* worker = new InitializeAsyncWorker(callback, this);
     worker->Queue();
     
     return env.Undefined();

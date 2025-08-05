@@ -20,6 +20,7 @@
     "test": "node test/test.js",
     "example": "node examples/detect-from-image.js",
     "example-async": "node examples/detect-async.js",
+    "example-init": "node examples/ensure-initialized.js",
     "example-comprehensive": "node examples/detect-comprehensive.js",
     "example-focused": "node examples/detect-focused.js",
     "performance": "node examples/performance-test.js",
