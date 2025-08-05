@@ -33,6 +33,12 @@ export declare class AprilTag {
     imageData: Buffer | Uint8Array
   ): AprilTagDetection[];
 
+  detectAsync(
+    width: number,
+    height: number,
+    imageData: Buffer | Uint8Array
+  ): Promise<AprilTagDetection[]>;
+
   setQuadDecimate(value: number): this;
   setQuadSigma(value: number): this;
   setRefineEdges(value: boolean): this;

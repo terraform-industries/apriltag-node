@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <thread>
+#include <mutex>
 
 extern "C" {
 #include "apriltag.h"
@@ -19,12 +20,18 @@ extern "C" {
 
 using namespace Napi;
 
+// Forward declarations
+class AprilTagDetector;
+class DetectAsyncWorker;
+
 class AprilTagDetector : public Napi::ObjectWrap<AprilTagDetector> {
 private:
     apriltag_detector_t* td;
     apriltag_family_t* tf;
     std::string family_name;
     bool family_initialized;
+    mutable std::mutex init_mutex;
+    mutable std::mutex detect_mutex;
 
 public:
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
@@ -32,19 +39,33 @@ public:
     ~AprilTagDetector();
     
     Napi::Value Detect(const Napi::CallbackInfo& info);
+    Napi::Value DetectAsync(const Napi::CallbackInfo& info);
     Napi::Value SetQuadDecimate(const Napi::CallbackInfo& info);
     Napi::Value SetQuadSigma(const Napi::CallbackInfo& info);
     Napi::Value SetRefineEdges(const Napi::CallbackInfo& info);
     Napi::Value SetDecodeSharpening(const Napi::CallbackInfo& info);
     Napi::Value SetNumThreads(const Napi::CallbackInfo& info);
     
-private:
     void InitializeFamily();
+    bool IsFamilyInitialized() const { 
+        // Reading a bool is atomic on most platforms, but for complete safety:
+        return family_initialized; 
+    }
+    apriltag_detector_t* GetDetector() const { return td; }
+    
+    // Thread-safe detection
+    zarray_t* DetectThreadSafe(image_u8_t* im) {
+        std::lock_guard<std::mutex> lock(detect_mutex);
+        return apriltag_detector_detect(td, im);
+    }
+    
+private:
 };
 
 Napi::Object AprilTagDetector::Init(Napi::Env env, Napi::Object exports) {
     Napi::Function func = DefineClass(env, "AprilTagDetector", {
         InstanceMethod("detect", &AprilTagDetector::Detect),
+        InstanceMethod("detectAsync", &AprilTagDetector::DetectAsync),
         InstanceMethod("setQuadDecimate", &AprilTagDetector::SetQuadDecimate),
         InstanceMethod("setQuadSigma", &AprilTagDetector::SetQuadSigma),
         InstanceMethod("setRefineEdges", &AprilTagDetector::SetRefineEdges),
@@ -112,6 +133,9 @@ AprilTagDetector::~AprilTagDetector() {
 }
 
 void AprilTagDetector::InitializeFamily() {
+    std::lock_guard<std::mutex> lock(init_mutex);
+    
+    // Double-check after acquiring lock
     if (family_initialized) return;
     
     std::cout << "AprilTag: Initializing family " << family_name << "..." << std::endl;
@@ -176,7 +200,7 @@ Napi::Value AprilTagDetector::Detect(const Napi::CallbackInfo& info) {
         .buf = buffer.Data()
     };
 
-    zarray_t* detections = apriltag_detector_detect(td, &im);
+    zarray_t* detections = DetectThreadSafe(&im);
 
     Napi::Array results = Napi::Array::New(env, zarray_size(detections));
     
@@ -209,6 +233,7 @@ Napi::Value AprilTagDetector::Detect(const Napi::CallbackInfo& info) {
     apriltag_detections_destroy(detections);
     return results;
 }
+
 
 Napi::Value AprilTagDetector::SetQuadDecimate(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
@@ -264,6 +289,113 @@ Napi::Value AprilTagDetector::SetNumThreads(const Napi::CallbackInfo& info) {
     }
     if (nthreads > 32) nthreads = 32;  // reasonable upper limit
     td->nthreads = nthreads;
+    return env.Undefined();
+}
+
+class DetectAsyncWorker : public Napi::AsyncWorker {
+private:
+    AprilTagDetector* detector_instance;
+    int width;
+    int height;
+    uint8_t* imageData;
+    size_t imageSize;
+    zarray_t* detections;
+
+public:
+    DetectAsyncWorker(Napi::Function& callback, AprilTagDetector* detector_inst,
+                      int w, int h, uint8_t* data, size_t size)
+        : Napi::AsyncWorker(callback), detector_instance(detector_inst), width(w), height(h), 
+          imageData(nullptr), imageSize(size), detections(nullptr) {
+        // Copy image data to avoid potential memory issues
+        imageData = new uint8_t[size];
+        memcpy(imageData, data, size);
+    }
+
+    ~DetectAsyncWorker() {
+        delete[] imageData;
+        if (detections) {
+            apriltag_detections_destroy(detections);
+        }
+    }
+
+    void Execute() override {
+        // Initialize family if not already done (in background thread)
+        if (!detector_instance->IsFamilyInitialized()) {
+            detector_instance->InitializeFamily();
+        }
+        
+        image_u8_t im = { 
+            .width = width,
+            .height = height,
+            .stride = width,
+            .buf = imageData
+        };
+
+        // Use thread-safe detection
+        detections = detector_instance->DetectThreadSafe(&im);
+    }
+
+    void OnOK() override {
+        Napi::Env env = Env();
+        
+        Napi::Array results = Napi::Array::New(env, zarray_size(detections));
+        
+        for (int i = 0; i < zarray_size(detections); i++) {
+            apriltag_detection_t* det;
+            zarray_get(detections, i, &det);
+            
+            Napi::Object detection = Napi::Object::New(env);
+            detection.Set("id", Napi::Number::New(env, det->id));
+            detection.Set("hamming", Napi::Number::New(env, det->hamming));
+            detection.Set("decision_margin", Napi::Number::New(env, det->decision_margin));
+            
+            Napi::Array center = Napi::Array::New(env, 2);
+            center.Set(0u, Napi::Number::New(env, det->c[0]));
+            center.Set(1u, Napi::Number::New(env, det->c[1]));
+            detection.Set("center", center);
+            
+            Napi::Array corners = Napi::Array::New(env, 4);
+            for (int j = 0; j < 4; j++) {
+                Napi::Array corner = Napi::Array::New(env, 2);
+                corner.Set(0u, Napi::Number::New(env, det->p[j][0]));
+                corner.Set(1u, Napi::Number::New(env, det->p[j][1]));
+                corners.Set(j, corner);
+            }
+            detection.Set("corners", corners);
+            
+            results.Set(i, detection);
+        }
+        
+        Callback().Call({env.Null(), results});
+    }
+};
+
+Napi::Value AprilTagDetector::DetectAsync(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    
+    if (info.Length() < 4) {
+        Napi::TypeError::New(env, "Expected width, height, image data, and callback").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    if (!info[0].IsNumber() || !info[1].IsNumber() || !info[2].IsBuffer() || !info[3].IsFunction()) {
+        Napi::TypeError::New(env, "Invalid arguments").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    int width = info[0].As<Napi::Number>().Int32Value();
+    int height = info[1].As<Napi::Number>().Int32Value();
+    Napi::Buffer<uint8_t> buffer = info[2].As<Napi::Buffer<uint8_t>>();
+    Napi::Function callback = info[3].As<Napi::Function>();
+    
+    if (buffer.Length() < width * height) {
+        Napi::TypeError::New(env, "Buffer too small for image dimensions").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    DetectAsyncWorker* worker = new DetectAsyncWorker(callback, this, width, height, buffer.Data(), buffer.Length());
+    worker->Queue();
+    
     return env.Undefined();
 }
 
