@@ -19,12 +19,14 @@ async function demonstrateAsyncDetection(imagePath) {
     console.log(`Image dimensions: ${info.width}x${info.height}`);
 
     // Create AprilTag detector
-    const detector = new AprilTag(FAMILIES.TAGSTANDARD52H13, {
+    const asyncDetector = new AprilTag(FAMILIES.TAGSTANDARD52H13, {
       quadDecimate: 2.0,
       quadSigma: 0.0,
       refineEdges: true,
       decodeSharpening: 0.25,
     });
+
+    await asyncDetector.ensureInitialized();
 
     console.log('\nStarting async detection...');
 
@@ -32,33 +34,31 @@ async function demonstrateAsyncDetection(imagePath) {
     const startTime = performance.now();
 
     // Start the async detection
-    const detectionPromise = detector.detectAsync(
+    const detectionPromise = asyncDetector.detectAsync(
       info.width,
       info.height,
       data
     );
 
     // This loop will continue running while detection happens in background
+    let responseCount = 0;
     const intervalId = setInterval(() => {
-      process.stdout.write(
-        `Main thread still responsive (${(performance.now() - startTime).toFixed(2)}ms elapsed)\r`
+      responseCount++;
+      console.log(
+        `Main thread still responsive #${responseCount} (${(performance.now() - startTime).toFixed(2)}ms elapsed)`
       );
-    }, 10);
+    }, 20);
 
     // Wait for detection to complete
     const detections = await detectionPromise;
 
     clearInterval(intervalId);
     const detectionTime = performance.now() - startTime;
-    console.log(`\nDetection completed in ${detectionTime}ms`);
+    console.log(
+      `\nDetection completed in ${detectionTime}ms (main thread was responsive ${responseCount} times)`
+    );
 
     console.log(`\nFound ${detections.length} AprilTag(s):`);
-    console.log('='.repeat(50));
-
-    detections.forEach((detection, index) => {
-      console.log(`\n📍 Tag #${index + 1}:`);
-      console.log(`   ID: ${detection.id}`);
-    });
 
     if (detections.length === 0) {
       console.log('\n❌ No AprilTags detected. Try:');
@@ -71,9 +71,22 @@ async function demonstrateAsyncDetection(imagePath) {
     console.log('\nPerformance Comparison:');
     console.log('-'.repeat(30));
 
+    const syncDetector = new AprilTag(FAMILIES.TAGSTANDARD52H13, {
+      quadDecimate: 2.0,
+      quadSigma: 0.0,
+      refineEdges: true,
+      decodeSharpening: 0.25,
+    });
+
+    await syncDetector.ensureInitialized();
+
+    console.log('Starting sync detection...');
     const syncStartTime = Date.now();
-    detector.detect(info.width, info.height, data);
+    const syncDetections = syncDetector.detect(info.width, info.height, data);
     const syncTime = Date.now() - syncStartTime;
+
+    console.log(`Sync detection completed in ${syncTime}ms`);
+    console.log(`\nFound ${syncDetections.length} AprilTag(s):`);
 
     console.log(`Async detection: ${detectionTime}ms (non-blocking)`);
     console.log(`Sync detection:  ${syncTime}ms (blocking)`);
