@@ -17,16 +17,15 @@
   "scripts": {
     "build": "node-gyp rebuild",
     "clean": "node-gyp clean",
-    "test": "node test/test.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "example": "node examples/detect-from-image.js",
     "example-async": "node examples/detect-async.js",
     "example-init": "node examples/ensure-initialized.js",
     "example-comprehensive": "node examples/detect-comprehensive.js",
     "example-focused": "node examples/detect-focused.js",
     "performance": "node examples/performance-test.js",
-    "timing": "node examples/constructor-timing.js",
-    "test-families": "node examples/test-all-families.js",
-    "test-lazy": "node examples/test-lazy-init.js"
+    "timing": "node examples/constructor-timing.js"
   },
   "keywords": [
     "apriltag",
@@ -53,7 +52,8 @@
   },
   "devDependencies": {
     "node-gyp": "^10.0.0",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "vitest": "^3.2.4"
   },
   "gypfile": true,
   "files": [
