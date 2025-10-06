@@ -10,7 +10,7 @@ async function demonstrateEnsureInitialized() {
   console.log('Demonstrating ensureInitialized() method');
   console.log('=' .repeat(50));
   
-  const imagePath = join(__dirname, '..', 'DSC02867.JPG');
+  const imagePath = join(__dirname, '..', 'data', 'DSC02867.JPG');
   
   // Load image
   const { data, info } = await sharp(imagePath)

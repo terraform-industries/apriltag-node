@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function runSingleThreadSafetyTest() {
-  const imagePath = join(__dirname, '..', 'DSC02867.JPG');
+  const imagePath = join(__dirname, '..', 'data', 'DSC02867.JPG');
 
   const { data, info } = await sharp(imagePath)
     .greyscale()

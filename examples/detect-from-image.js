@@ -65,6 +65,6 @@ async function detectAprilTags(imagePath) {
 }
 
 // Get image path from command line or use default
-const imagePath = process.argv[2] || join(__dirname, '..', 'DSC02867.JPG');
+const imagePath = process.argv[2] || join(__dirname, '..', 'data', 'DSC02867.JPG');
 
 detectAprilTags(imagePath);
