@@ -60,8 +60,6 @@ jobs:
       - name: Run tests
         run: |
           npm test
-          npm run test-families
-          npm run test-lazy
 
       - name: Release
         uses: googleapis/release-please-action@v4

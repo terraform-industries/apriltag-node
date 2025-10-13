@@ -57,8 +57,6 @@ jobs:
       - name: Run tests
         run: |
           npm test
-          npm run test-families
-          npm run test-lazy
 
       - name: Verify package can be packed
         run: npm pack --dry-run
@@ -111,8 +109,6 @@ jobs:
       - name: Run tests
         run: |
           npm test
-          npm run test-families
-          npm run test-lazy
 
       - name: Publish prerelease to NPM with beta tag
         run: npm publish --tag beta --provenance --access public

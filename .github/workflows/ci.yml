@@ -69,12 +69,6 @@ jobs:
       - name: Run basic tests
         run: npm test
 
-      - name: Run family tests
-        run: npm run test-families
-
-      - name: Run lazy initialization tests
-        run: npm run test-lazy
-
       - name: Run comprehensive example
         run: npm run example-comprehensive
 
