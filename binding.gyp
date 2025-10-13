@@ -11,6 +11,7 @@
         "deps/apriltag/common/getopt.c",
         "deps/apriltag/common/homography.c",
         "deps/apriltag/common/image_u8.c",
+        "deps/apriltag/common/image_u8_parallel.c",
         "deps/apriltag/common/image_u8x3.c",
         "deps/apriltag/common/image_u8x4.c",
         "deps/apriltag/common/matd.c",
