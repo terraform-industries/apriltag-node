@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/terraform-industries/apriltag-node/compare/apriltag-node-v1.2.0...apriltag-node-v1.3.0) (2025-10-13)
+
+
+### Features
+
+* update apriltag library to latest master ([133147e](https://github.com/terraform-industries/apriltag-node/commit/133147eb8431738b3f49ec37bf2ac10dd55af1a8))
+
 ## [1.2.0](https://github.com/terraform-industries/apriltag-node/compare/apriltag-node-v1.1.1...apriltag-node-v1.2.0) (2025-08-06)
 
 
